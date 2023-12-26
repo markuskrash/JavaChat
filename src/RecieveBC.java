@@ -23,26 +23,30 @@ public class RecieveBC implements Runnable{
     @Override
     public void run() {
         try {
-            DatagramSocket ds = new DatagramSocket(port);
+            DatagramSocket ds;
             while (running) {
+                ds = new DatagramSocket(port);
                 DatagramPacket pack = new DatagramPacket(new byte[255], 255);
                 ds.receive(pack);
-                String word = new String(pack.getData());
-                int i = 5;
-                while(i < 255){
-                    if(!Objects.equals(word.charAt(i), word.charAt(254))){
-                        i++;
-                    }else{
-                        break;
+                if(!user.getMediator().getUserIPs().contains(pack.getAddress().toString().substring(1))) {
+                    String word = new String(pack.getData());
+                    int i = 5;
+                    while (i < 255) {
+                        if (!Objects.equals(word.charAt(i), word.charAt(254))) {
+                            i++;
+                        } else {
+                            break;
+                        }
+                    }
+                    if (word.startsWith("hello")) {
+                        Socket socket = new Socket(pack.getAddress().toString().substring(1), port);
+                        user.getMediator().addUser(new User(word.substring(6, i), word.substring(6, i), pack.getAddress().toString().substring(1), port, false));
+                        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+                        out.println(user.getOtherName());
+                        out.flush();
                     }
                 }
-                if(word.startsWith("hello")){
-                    Socket socket = new Socket(pack.getAddress().toString().substring(1), port);
-                    user.getMediator().addUser(new User(word.substring(6, i), word.substring(6, i), pack.getAddress().toString().substring(1), port, false));
-                    PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println(user.getOtherName());
-                    out.flush();
-                }
+                ds.close();
             }
         } catch (IOException e) {
             e.printStackTrace();

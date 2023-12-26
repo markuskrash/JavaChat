@@ -27,8 +27,8 @@ public class RecieveS implements Runnable {
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String word = in.readLine();
                 ArrayList<String> users = user.getMediator().getUserIPs();
-                if (!users.contains(socket.getLocalAddress().getHostAddress())) {
-                    user.getMediator().addUser(new User(word, word, socket.getLocalAddress().getHostAddress(), port, false));
+                if (!users.contains(socket.getInetAddress().getHostAddress())) {
+                    user.getMediator().addUser(new User(word, word, socket.getInetAddress().getHostAddress(), port, false));
                 } else {
                     JTextArea textArea = Window.getTextArea();
                     if (textArea != null && textArea.getText().isEmpty()) {
@@ -37,7 +37,6 @@ public class RecieveS implements Runnable {
                         textArea.setText(textArea.getText() + '\n' + user.getMediator().getNameByIP(socket.getInetAddress().getHostAddress()) + ": " + word);
                     }
                 }
-                System.out.println(word);
                 socket.close();
             }
         } catch (IOException e) {

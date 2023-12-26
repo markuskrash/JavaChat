@@ -50,6 +50,7 @@ public class Mediator {
             if(Objects.equals(i.getIP(), ip)){
                 return i.getName();
             }
+//            System.out.println(i.getIP());
         }
         return "ERROR";
     }

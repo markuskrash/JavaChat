@@ -80,7 +80,7 @@ public class Window extends JFrame {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        Window wnd = new Window(InetAddress.getLocalHost().getHostAddress(), 8080);
+        Window wnd = new Window(InetAddress.getLocalHost().getHostAddress(), 12345);
         wnd.setVisible(true);
 
     }

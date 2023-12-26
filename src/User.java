@@ -21,26 +21,11 @@ public class User implements Runnable{
     private int port;
 
     public User(String name, String otherName, String host, int port, boolean running) throws IOException {
-//        serverSocket = new ServerSocket(port);
-//        clientSocket = new Socket(host, port);
-//        clientSocket = serverSocket.accept();
-//        out = new PrintWriter(clientSocket.getOutputStream(), true);
-//        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         this.otherName = otherName;
         this.name = name;
         this.host = host;
         this.port = port;
         this.running = running;
-        String whost = "";
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = networkInterfaces.nextElement();
-            if(displayBroadcastAddress(networkInterface) != null) {
-                whost = displayBroadcastAddress(networkInterface);
-            }
-        }
-        BroadcastingClient.broadcast("hello " + otherName, InetAddress.getByName(whost), port);
-
     }
 
 
@@ -78,32 +63,18 @@ public class User implements Runnable{
             RecieveBC recieveBC = new RecieveBC(running, port, this);
             Thread threadBC = new Thread(recieveBC);
             threadBC.start();
-        }
-
-    }
-
-
-    private static String displayBroadcastAddress(NetworkInterface networkInterface) throws SocketException, UnknownHostException {
-        Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-
-        while (inetAddresses.hasMoreElements()) {
-            InetAddress inetAddress = inetAddresses.nextElement();
-            if (Objects.equals(InetAddress.getLocalHost().getHostAddress(), inetAddress.getHostAddress())) {
-
-                try {
-                    InterfaceAddress interfaceAddress = networkInterface.getInterfaceAddresses().get(0);
-                    InetAddress broadcastAddress = interfaceAddress.getBroadcast();
-                    if (broadcastAddress != null) {
-                        return broadcastAddress.getHostAddress();
-                    } else {
-                        System.out.println("Широковещательный адрес неизвестен.");
-                    }
-                } catch (NullPointerException e) {
-                    System.out.println("Информация о подсети неизвестна.");
-                }
+            try {
+                Thread.sleep(500);
+                BroadcastingClient.broadcast("hello " + otherName, InetAddress.getByName("255.255.255.255"), port);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
-        return null;
+
     }
+
+
 
 }
