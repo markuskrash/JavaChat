@@ -3,6 +3,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Mediator {
     ArrayList<User> users;
@@ -24,14 +25,32 @@ public class Mediator {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             out.println(message);
             out.flush();
+            socket.close();
         }
     }
 
-    public ArrayList<String> getUsers(){
+    public ArrayList<String> getUserIPs(){
         ArrayList<String>ipUsers = new ArrayList<>(0);
         for(User i:users){
             ipUsers.add(i.getIP());
         }
         return ipUsers;
+    }
+
+    public ArrayList<String> getUserNames(){
+        ArrayList<String>ipUsers = new ArrayList<>(0);
+        for(User i:users){
+            ipUsers.add(i.getName());
+        }
+        return ipUsers;
+    }
+
+    public String getNameByIP(String ip){
+        for(User i:users){
+            if(Objects.equals(i.getIP(), ip)){
+                return i.getName();
+            }
+        }
+        return "ERROR";
     }
 }
